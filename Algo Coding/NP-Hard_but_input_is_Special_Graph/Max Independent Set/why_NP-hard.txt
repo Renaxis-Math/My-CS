@@ -1,0 +1,14 @@
+1. The decision version IS_INDEPENDENT_SET (“is there an independent set of size ≥ k?”) 
+is in NP because if someone gives you a set of vertices, you can check in polynomial time that no two are adjacent.
+
+2. A known NP-Complete problem is CLIQUE, which reduces to IS_INDEPENDENT_SET
+
+    - A clique in an undirected graph is a subset of vertices where every vertex 
+    is directly connected to every other vertex in that subset, forming a complete subgraph
+
+    - A clique in a graph corresponds exactly to an independent set in the complement graph, 
+    so a CLIQUE reduces to IS_INDEPENDENT_SET in polynomial time.
+
+3. Since CLIQUE is NP-complete, IS_INDEPENDENT_SET is NP-COMPLETE
+=> MIS is NP-hard because if you could compute the maximum size in polytime, 
+you could answer the decision question IS_INDEPENDENT_SET by checking whether MIS's answer is ≥ k

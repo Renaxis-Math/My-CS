@@ -1,0 +1,38 @@
+Building Huffman Tree = Building code to encode
+Traversing Huffman Tree = Generate Encoding & Decoding
+
+
+1. In a Huffman tree, there are two distinct "looks" for a node, depending on whether it’s:
+    - a leaf
+    - an internal node (a branching point)
+
+2. Leaf: this is where the actual data lives.
+    - Character: The letter it represents (e.g., 'A').
+    - Frequency: How many times that letter appeared (e.g., 5).
+    - Child Pointers: -> None (representing end of the line).
+
+   Non-leaf (internal) nodes: they are used to build the path to the letters.
+    - Frequency: The sum of the frequencies of its two children.
+    - Left Child (0): A pointer to the node reached by a 0 bit.
+    - Right Child (1): A pointer to the node reached by a 1 bit.
+    - Character: Usually set to a "null" or "empty" -- it doesn't store a character.
+
+3. Always a full tree:
+    - Every non-leaf node has exactly two children.
+    - Every node has 0 or 2 children.
+
+4. The Merging Rule: 
+    - selects the two nodes with the lowest frequencies
+    - joins them to a single new parent.
+
+    [1] = 7
+   /    \ 
+[2]      [3] = 4
+A3      /      \
+      [6]     [7]=2
+      B2      / \
+            [14] [15]
+             C1   D1
+
+    => At any iteration, we want the least Frequency leaves
+    => Store them in a Heap

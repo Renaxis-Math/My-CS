@@ -1,0 +1,28 @@
+Idea:
+
+1. When 'fast' and 'slow' somewhere in the cycle:
+
+- 'slow' traveled E + d
+- 'fast' traveled 2(E + d)
+- E = # steps from START to CYCLE-ENTRY
+- d = # steps from CYCLE-ENTRY to FAST-SLOW-MEET
+
+2. The extra distance = nC, C = CYCLE-SIZE
+
+2(E+d) - (E+d) = nC
+<-> E + d = nC
+-> E = nC - d
+
+3. If the cycle length is C, and the initial gap between them 
+(once both are in the cycle) is some value g where 0 < g < C,
+then after exactly g iterations the gap hits 0 -- they're at the same node.
+
+4. To find CYCLE-ENTRY: reset one ptr to START, keep other at MEET.
+   Both move 1 step at a time.
+
+- Ptr from START walks E steps -> lands on ENTRY.
+- Ptr from MEET walks E = nC - d steps.
+  It's d past ENTRY, so ends at d + (nC - d) = nC past ENTRY
+  = full laps -> back at ENTRY.
+
+Both collide at ENTRY = the duplicate.
