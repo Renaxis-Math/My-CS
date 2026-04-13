@@ -10,6 +10,13 @@ using namespace std;
 enum class Side { Buy, Sell };
 enum class OrderType { New, Cancel, Trade };
 
+struct Order {
+    int id;
+    Side side;
+    OrderType type;
+    double trade_price; // meaningful when type == Trade
+};
+
 class RuleInterface {
     public:
 
@@ -27,13 +34,6 @@ class RuleInterface {
         // virtual bool can_output(const Order& order) const = 0;
         
         virtual bool onOrder(const Order& order) = 0;
-}
-
-struct Order {
-    int id;
-    Side side;
-    OrderType type;
-    double trade_price; // meaningful when type == Trade
 };
 
 class Rule : public RuleInterface {
@@ -47,8 +47,8 @@ class Rule : public RuleInterface {
             _trigger_target{trigger_target}, _output_target{output_target}
         {}
 
-        int trigger_target() { return _trigger_target; }
-        int output_target() { return _output_target; }
+        int trigger_target() const { return _trigger_target; }
+        int output_target() const { return _output_target; }
 
         bool is_trigger(const Order& order) const {
             return order.type == OrderType::Trade && order.trade_price >= 100;
@@ -101,11 +101,11 @@ class OrderFilter {
         2. Why const RuleInterface& here:
 	    •	OrderFilter only reads the rule, not changes it
     */
-    RuleInterface& rule; 
+    RuleInterface& _rule; 
 
     public:
-        OrderFilter(const RuleInterface& rule) : _rule{rule} {}
-        bool onOrder(const Order& order) return _rule.onOrder(order);
+        OrderFilter(RuleInterface& rule) : _rule{rule} {}
+        bool onOrder(const Order& order) { return _rule.onOrder(order); }
 };
 
 int main() {
