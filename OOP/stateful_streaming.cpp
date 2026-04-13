@@ -94,18 +94,23 @@ class OrderFilter {
     // int _trigger_count = 0, _output_count = 0;
     // bool _is_active = false, _is_done = false;
 
-    /* 1. T& not T* because
-        •   no need null handling unlike pointer
-	    •	avoids copying
-	    •	preserves polymorphism
-        2. Why const RuleInterface& here:
-	    •	OrderFilter only reads the rule, not changes it
-    */
-    RuleInterface& _rule; 
+    vector<RuleInterface*> _rules; // C++ can't have a vector of references
+    void add_rule(RuleInterface* new_rule) { _rules.emplace_back(new_rule); }
 
     public:
-        OrderFilter(RuleInterface& rule) : _rule{rule} {}
-        bool onOrder(const Order& order) { return _rule.onOrder(order); }
+        OrderFilter(RuleInterface& rule) {
+            add_rule(&rule);
+        }
+        bool onOrder(const Order& order) {
+            bool matched_a_rule = false;
+            for (auto* rule : _rules) {
+                if (rule->onOrder(order)) {
+                    matched_a_rule = true;
+                    break;
+                }
+            }
+            return matched_a_rule;
+        }
 };
 
 int main() {
