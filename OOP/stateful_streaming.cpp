@@ -69,15 +69,44 @@ class TradeTriggerRule {
                     ans = false;
                     break;
             }
-
+            
+            if (ans) cout << "Emitted Order ID: " << order.id << '\n';
             return ans;
         }
 };
 
-using Rule = TradeTriggerRule;
+// Rule 2: "Anytime if 3 buys and 2 sells happen in any order, alert once."
+class BuySellAlertRule {
+    int _buy_count = 0, _sell_count = 0;
+
+    int _threshold_buy_count, _threshold_sell_count;
+
+    void reset() {
+        _buy_count = 0; _sell_count = 0;
+    }
+
+    public:
+        BuySellAlertRule(int threshold_buy_count, int threshold_sell_count) :
+            _threshold_buy_count{threshold_buy_count},
+            _threshold_sell_count{threshold_sell_count}
+        {}
+
+        bool onOrder(const Order& order) {
+            if (order.side == Side::Buy) ++_buy_count;
+            if (order.side == Side::Sell) ++_sell_count;
+
+            if (_buy_count >= _threshold_buy_count && _sell_count >= _threshold_sell_count) {
+                reset();
+                return true; // Emit this specific order as the alert
+            }
+            return false;
+        }
+};
+
+using Rule = variant<TradeTriggerRule, BuySellAlertRule>;
 
 class OrderEngine {
-    vector<TradeTriggerRule> _rules;
+    vector<Rule> _rules;
 
     public:
         template<typename... Rules>
@@ -85,21 +114,33 @@ class OrderEngine {
             (add_rule(new_rules), ...);
         }
 
-        void add_rule(const TradeTriggerRule& new_rule) {
+        void add_rule(const Rule& new_rule) {
             _rules.emplace_back(new_rule);
         }
 
         bool onOrder(const Order& order) {
             for (auto& rule : _rules) {
-                bool is_match = rule.onOrder(order);
-                if (is_match) return true;
+                bool is_match = std::visit( // to figure out type for std::variant
+                    [&order](auto& found_rule) {
+                        return found_rule.onOrder(order);
+                    }, 
+                    rule
+                );
+                // rule.onOrder(order);
+                if (is_match) {
+                    cout << "ALERT Order ID: " << order.id << '\n';
+                    return true;
+                }
             }
             return false;
         }
 };
 
 int main() {
-    OrderEngine engine(TradeTriggerRule(5, 3, 100.0));
+    OrderEngine engine(
+        TradeTriggerRule(5, 3, 100.0),
+        BuySellAlertRule(3, 2)
+    );
 
     // Test Stream
     vector<Order> stream = {
@@ -118,43 +159,8 @@ int main() {
     };
 
     for (const auto& order : stream) {
-        if (engine.onOrder(order)) {
-            cout << "Emitted Order ID: " << order.id << '\n';
-        }
+        engine.onOrder(order);
     }
 
     return 0;
 }
-
-/* DESIGN
-
-+------------------+
-|      Order       |
-+------------------+
-| id               |
-| side             |
-| type             |
-| tradePrice       |
-+------------------+
-
-
-           passes Order to
-+----------------------------------+
-|         OrderFilter              |
-+----------------------------------+
-| has a Rule                       |
-| processes incoming orders        |
-| returns matching output orders   |
-+----------------------------------+
-                |
-                | owns / uses
-                v
-+----------------------------------+
-|              Rule                |
-+----------------------------------+
-| trigger condition                |
-| trigger count target             |
-| output condition                 |
-| output count target              |
-+----------------------------------+
-*/
