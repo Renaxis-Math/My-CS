@@ -30,7 +30,7 @@ int main() {
     );
 
     ifstream input_file("orders.txt");
-    if (!input_file.is_open()) {
+    if (!input_file) {
         cerr << "Failed to open orders.txt\n";
         return 1;
     }
