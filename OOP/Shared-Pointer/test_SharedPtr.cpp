@@ -1,7 +1,6 @@
 #include "shared_ptr.h"
 #include <cassert>
 #include <iostream>
-#include <string>
 
 struct Box {
     int value;
