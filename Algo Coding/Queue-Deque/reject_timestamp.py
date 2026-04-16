@@ -1,11 +1,14 @@
 """
-Create a class that will determine if we've-seen • a certain rate of rejects given a threshold and• timespan
-In the constructor
-- threshold is the-number. of rejections within the timespan that will cause an• alert
+Create a class that will determine if we've-seen 
+- a certain rate of rejects given a threshold, and
+- timespan
+
+In the constructor:
+- threshold is the number of rejections within the timespan that will cause an alert
 - timespan is the time window in microseconds
-handleReject accepts a timestamp-in•microseconds
-- returns true if. the rate of rejections• rea the threshold within the timespan
--• returns false• otherwise
+- handleReject accepts a timestamp in microseconds
+- returns true if the rate of rejections reach the threshold within the timespan
+- returns false otherwise
 """
 
 from collections import deque

@@ -1,0 +1,9 @@
+.pytest_cache
+.vscode
+__pycache__
+env
+nohup.out
+private
+examples/data/in
+examples/data/out
+dist

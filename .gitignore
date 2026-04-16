@@ -2,3 +2,9 @@
 __pycache__/
 *.pyc
 C++ Learning/cs106l-assignments/
+.vscode/
+env/
+venv/
+ML-Review-main/
+Systems/
+Statistics/
